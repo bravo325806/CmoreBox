@@ -45,7 +45,7 @@ public class YoutubeActivity extends AppCompatActivity {
     @Bind(R.id.youtube_outer_list)
     RecyclerView youtubeOuterList;
     @Bind(R.id.youtube_drawer_list)
-    RecyclerView youtubeDrawerList;
+    ListView youtubeDrawerList;
     @Bind(R.id.activity_drawer_layout)
     DrawerLayout drawerLayout;
     @Bind(R.id.activity_outer_main)
@@ -61,6 +61,7 @@ public class YoutubeActivity extends AppCompatActivity {
     private int position = 0;
     private CmoreAPI cmoreAPI;
     private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
+    private ArrayList<ArrayList<YoutubeInfo>> arrayLists;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +77,19 @@ public class YoutubeActivity extends AppCompatActivity {
     }
 
     private void init() {
+        arrayLists=new ArrayList<>();
+        for (int i=0;i<6;i++){
+            ArrayList arrayList2=new ArrayList();
+            YoutubeInfo youtubeInfo=new YoutubeInfo();
+            youtubeInfo.setT2name("test");
+            arrayList2.add(youtubeInfo);
+            arrayLists.add(arrayList2);
+        }
+
         youtubeList = new ArrayList<>();
         setRecycleView();
-        setAPI();
-        setDrawerLayout();
+//        setAPI();
+//        setDrawerLayout();
     }
 
     @Override
@@ -107,9 +117,6 @@ public class YoutubeActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         youtubeOuterList.setLayoutManager(linearLayoutManager);
 
-        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        youtubeDrawerList.setLayoutManager(linearLayoutManager2);
     }
 
     private void setAPI() {
@@ -130,6 +137,9 @@ public class YoutubeActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(mDrawerToggle);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
         drawerLayout.openDrawer(Gravity.LEFT);
+
+        youtubeDrawerAdapter = new YoutubeDrawerAdapter(arrayLists);
+        youtubeDrawerList.setAdapter(youtubeDrawerAdapter);
     }
     private void setCredential() {
         credential = GoogleAccountCredential.usingOAuth2(
@@ -153,20 +163,20 @@ public class YoutubeActivity extends AppCompatActivity {
         if (youtubeDrawerList.getAdapter() == null) {
             youtubeDrawerAdapter = new YoutubeDrawerAdapter(arrayList);
             youtubeDrawerList.setAdapter(youtubeDrawerAdapter);
-            youtubeDrawerAdapter.setItemClick(drawerItemClick);
+//            youtubeDrawerAdapter.setItemClick(drawerItemClick);
         } else {
-            youtubeDrawerAdapter.setArrayList(arrayList);
+//            youtubeDrawerAdapter.setArrayList(arrayList);
             youtubeDrawerAdapter.notifyDataSetChanged();
         }
         handler.post(runnable);
     }
-    YoutubeDrawerAdapter.OnItemClick drawerItemClick = new YoutubeDrawerAdapter.OnItemClick() {
-        @Override
-        public void ItemOnClick() {
-
-            drawerLayout.closeDrawers();
-        }
-    };
+    //    YoutubeDrawerAdapter.OnItemClick drawerItemClick = new YoutubeDrawerAdapter.OnItemClick() {
+//        @Override
+//        public void ItemOnClick() {
+//
+//            drawerLayout.closeDrawers();
+//        }
+//    };
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {

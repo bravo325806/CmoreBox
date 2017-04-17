@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
 
         android:layout_gravity="start"
         android:id="@+id/youtube_drawer_list"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:background="@color/colorDrawer"></android.support.v7.widget.RecyclerView>
+        android:background="@color/colorDrawer"></ListView>
 
     <RelativeLayout
         android:translationX="300dp"
