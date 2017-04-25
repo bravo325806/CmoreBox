@@ -82,19 +82,6 @@ public class YoutubeActivity extends AppCompatActivity {
         setDrawerLayout();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Handler handler=new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setDrawerLayout();
-            }
-        },3000);
-    }
-
-
     private void logUser() {
         // TODO: Use the current user's information
         // You can call any combination of these three methods
@@ -159,6 +146,7 @@ public class YoutubeActivity extends AppCompatActivity {
             youtubeDrawerAdapter.notifyDataSetChanged();
         }
         handler.post(runnable);
+
     }
     YoutubeDrawerAdapter.OnItemClick drawerItemClick = new YoutubeDrawerAdapter.OnItemClick() {
         @Override
@@ -183,6 +171,7 @@ public class YoutubeActivity extends AppCompatActivity {
             Intent intent = new Intent(YoutubeActivity.this, YoutubePlayerActivity.class);
             intent.putExtra("data", data);
             startActivity(intent);
+
         }
     };
 
@@ -191,21 +180,30 @@ public class YoutubeActivity extends AppCompatActivity {
         int keyCode = event.getKeyCode();
         if (youtubeDrawerList.hasFocus() && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             drawerLayout.closeDrawers();
+            youtubeOuterListAdapter.getInnerRecylerView().get(position).getChildAt(0).requestFocus();
+            return true;
         } else if (!youtubeOuterList.hasFocus() && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             drawerLayout.openDrawer(Gravity.LEFT);
+            youtubeDrawerList.getChildAt(position).requestFocus();
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
             View v = youtubeDrawerList.getFocusedChild();
-//            position = youtubeDrawerList.getChildAdapterPosition(v);
+            position = youtubeDrawerList.getChildAdapterPosition(v);
             if (position >= 0) {
                 youtubeOuterList.smoothScrollToPosition(position);
+            }else{
+                View v2 = youtubeOuterList.getFocusedChild();
+                position = youtubeOuterList.getChildAdapterPosition(v2);
             }
             showToast(position + "");
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             View v = youtubeDrawerList.getFocusedChild();
-//            position = youtubeDrawerList.getChildAdapterPosition(v);
+            position = youtubeDrawerList.getChildAdapterPosition(v);
             if (position >= 0) {
                 youtubeOuterList.smoothScrollToPosition(position);
+            }else {
+                View v2 = youtubeOuterList.getFocusedChild();
+                position = youtubeOuterList.getChildAdapterPosition(v2);
             }
             showToast(position + "");
         }

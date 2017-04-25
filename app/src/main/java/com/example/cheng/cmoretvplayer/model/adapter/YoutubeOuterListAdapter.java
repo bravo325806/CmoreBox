@@ -20,12 +20,11 @@ import java.util.List;
 
 public class YoutubeOuterListAdapter extends RecyclerView.Adapter<YoutubeOuterListAdapter.ViewHolder> {
     private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
+    private HashMap<Integer,RecyclerView> innerRecylerView;
     private YoutubeInnerListAdapter youtubeInnerListAdapter;
-    private int count;
-    private int listsize=0;
     public YoutubeOuterListAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
         this.youtubeList = youtubeList;
-        listsize=0;
+        innerRecylerView=new HashMap<>();
     }
 
     @Override
@@ -50,6 +49,7 @@ public class YoutubeOuterListAdapter extends RecyclerView.Adapter<YoutubeOuterLi
         }
         youtubeInnerListAdapter = new YoutubeInnerListAdapter(youtubeList.get(position));
         holder.youtubeInnerRecyclerView.setAdapter(youtubeInnerListAdapter);
+        innerRecylerView.put(position,holder.youtubeInnerRecyclerView);
     }
     @Override
     public int getItemCount() {
@@ -70,7 +70,9 @@ public class YoutubeOuterListAdapter extends RecyclerView.Adapter<YoutubeOuterLi
 
         }
     }
-
+    public HashMap<Integer,RecyclerView> getInnerRecylerView(){
+        return innerRecylerView;
+    }
     public void setArrayList(ArrayList arrayList) {
         youtubeList = arrayList;
     }

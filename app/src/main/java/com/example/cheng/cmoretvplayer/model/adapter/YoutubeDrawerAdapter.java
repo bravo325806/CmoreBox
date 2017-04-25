@@ -55,6 +55,9 @@ public class YoutubeDrawerAdapter extends RecyclerView.Adapter<YoutubeDrawerAdap
                 itemOnClick.ItemOnClick();
             }
         });
+        if(position==0){
+            holder.textView.requestFocus();
+        }
     }
 
     @Override
