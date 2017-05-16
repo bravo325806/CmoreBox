@@ -1,26 +1,21 @@
-package com.example.cheng.cmoretvplayer.model;
+package com.example.cheng.cmoretvplayer.model.asynctask;
 
 import android.app.ProgressDialog;
-import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cheng.cmoretvplayer.R;
-import com.example.cheng.cmoretvplayer.view.YoutubeActivity;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.view.activity.MenuActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by cheng on 2017/3/28.
@@ -30,11 +25,11 @@ public class YoutubeVideoAsync extends AsyncTask {
     private YouTube youTube;
     private ProgressDialog progressDialog;
     private GoogleAccountCredential credential;
-    private YoutubeActivity activity;
+    private MenuActivity activity;
     private ArrayList<ArrayList<YoutubeInfo>> youtubePlayList;
     private String response;
 
-    public YoutubeVideoAsync(YoutubeActivity activity, GoogleAccountCredential credential, ArrayList<ArrayList<YoutubeInfo>> youtubePlayList) {
+    public YoutubeVideoAsync(MenuActivity activity, GoogleAccountCredential credential, ArrayList<ArrayList<YoutubeInfo>> youtubePlayList) {
         this.activity = activity;
         this.credential = credential;
         this.youtubePlayList = youtubePlayList;
@@ -54,7 +49,12 @@ public class YoutubeVideoAsync extends AsyncTask {
                     YouTube.Videos.List videoRequest = youTube.videos().list("contentDetails,snippet").setId(youtubePlayList.get(i).get(j).getVideoUrl().toString())
                             .setFields("items/snippet/thumbnails");
                     VideoListResponse video = videoRequest.execute();
-                    youtubePlayList.get(i).get(j).setThumbnails(video.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl());
+                    if(!video.getItems().isEmpty()){
+                        youtubePlayList.get(i).get(j).setVideoThumbnails(video.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl());
+                    }else{
+                        youtubePlayList.get(i).remove(j);
+                    }
+
                 }
             }
         } catch (UserRecoverableAuthIOException e) {

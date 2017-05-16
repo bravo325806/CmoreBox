@@ -1,45 +1,41 @@
-package com.example.cheng.cmoretvplayer.model.adapter;
+package com.example.cheng.cmoretvplayer.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cheng.cmoretvplayer.R;
-import com.example.cheng.cmoretvplayer.model.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by cheng on 2017/3/14.
  */
 
-public class YoutubeInnerListAdapter extends RecyclerView.Adapter<YoutubeInnerListAdapter.ViewHolder> {
-    private ArrayList<YoutubeInfo> youtubeList;
+public class MenuInnerListAdapter extends RecyclerView.Adapter<MenuInnerListAdapter.ViewHolder> {
+    private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
     private OnItemClick itemOnClick;
     private Context context;
-
     public interface OnItemClick {
-        void ItemOnClick(View view, HashMap data);
+        void ItemOnClick(View view, ArrayList data);
     }
 
-    public YoutubeInnerListAdapter(ArrayList<YoutubeInfo> youtubeList) {
+    public MenuInnerListAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
         this.youtubeList = youtubeList;
     }
 
     @Override
-    public YoutubeInnerListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MenuInnerListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contactView = inflater.inflate(R.layout.item_youtube_inner_list, parent, false);
+        View contactView = inflater.inflate(R.layout.item_menu_inner_list, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView);
@@ -47,17 +43,12 @@ public class YoutubeInnerListAdapter extends RecyclerView.Adapter<YoutubeInnerLi
     }
 
     @Override
-    public void onBindViewHolder(YoutubeInnerListAdapter.ViewHolder holder, int position) {
-        HashMap map = new HashMap();
-        map.put("title", youtubeList.get(position).getVideoTitle().toString());
-        map.put("videoId", youtubeList.get(position).getVideoUrl().toString());
-        map.put("position", position);
-        map.put("id", youtubeList.get(position).getVideoId().toString());
-        Ion.with(holder.imageView).load(youtubeList.get(position).getThumbnails().toString());
-        holder.textView.setText(youtubeList.get(position).getVideoTitle().toString());
+    public void onBindViewHolder(MenuInnerListAdapter.ViewHolder holder, int position) {
+        Ion.with(holder.imageView).load(youtubeList.get(position).get(0).getT2Thumbnails().toString());
+        holder.textView.setText(youtubeList.get(position).get(0).getT2name().toString());
         holder.imageView.setTag(position);
         holder.layout.setOnClickListener(imageClick);
-        holder.layout.setTag(map);
+        holder.layout.setTag(youtubeList.get(position));
     }
 
     @Override
@@ -68,7 +59,7 @@ public class YoutubeInnerListAdapter extends RecyclerView.Adapter<YoutubeInnerLi
     View.OnClickListener imageClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            itemOnClick.ItemOnClick(v, (HashMap) v.getTag());
+            itemOnClick.ItemOnClick(v,(ArrayList) v.getTag());
         }
     };
 

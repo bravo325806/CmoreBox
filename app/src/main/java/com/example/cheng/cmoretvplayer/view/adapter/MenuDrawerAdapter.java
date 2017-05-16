@@ -1,54 +1,48 @@
-package com.example.cheng.cmoretvplayer.model.adapter;
+package com.example.cheng.cmoretvplayer.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cheng.cmoretvplayer.R;
-import com.example.cheng.cmoretvplayer.model.YoutubeInfo;
-import com.koushikdutta.ion.Ion;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by cheng on 2017/3/20.
  */
 
-public class YoutubeDrawerAdapter extends RecyclerView.Adapter<YoutubeDrawerAdapter.ViewHolder> {
+public class MenuDrawerAdapter extends RecyclerView.Adapter<MenuDrawerAdapter.ViewHolder> {
     private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
-    private YoutubeDrawerAdapter.OnItemClick itemOnClick;
+    private MenuDrawerAdapter.OnItemClick itemOnClick;
     private Context context;
 
     public interface OnItemClick {
         void ItemOnClick();
     }
 
-    public YoutubeDrawerAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
+    public MenuDrawerAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
         this.youtubeList = youtubeList;
     }
 
     @Override
-    public YoutubeDrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MenuDrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contactView = inflater.inflate(R.layout.item_youtube_drawer_list, parent, false);
+        View contactView = inflater.inflate(R.layout.item_menu_drawer_list, parent, false);
 
         // Return a new holder instance
-        YoutubeDrawerAdapter.ViewHolder viewHolder = new YoutubeDrawerAdapter.ViewHolder(contactView);
+        MenuDrawerAdapter.ViewHolder viewHolder = new MenuDrawerAdapter.ViewHolder(contactView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(YoutubeDrawerAdapter.ViewHolder holder, int position) {
-        holder.textView.setText(youtubeList.get(position).get(0).getT2name());
+    public void onBindViewHolder(MenuDrawerAdapter.ViewHolder holder, int position) {
+        holder.textView.setText("cmoreBox");
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,10 +56,15 @@ public class YoutubeDrawerAdapter extends RecyclerView.Adapter<YoutubeDrawerAdap
 
     @Override
     public int getItemCount() {
-        return youtubeList.size();
+        if(youtubeList.size()>0){
+            return (youtubeList.size()/30)+1;
+        }else {
+            return 0;
+        }
+
     }
 
-    public void setItemClick(YoutubeDrawerAdapter.OnItemClick itemOnClick) {
+    public void setItemClick(MenuDrawerAdapter.OnItemClick itemOnClick) {
         this.itemOnClick = itemOnClick;
     }
     public void setArrayList(ArrayList<ArrayList<YoutubeInfo>> youtubeList){
