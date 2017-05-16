@@ -1,23 +1,21 @@
-package com.example.cheng.cmoretvplayer.view;
+package com.example.cheng.cmoretvplayer.view.activity;
 
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cheng.cmoretvplayer.R;
 import com.example.cheng.cmoretvplayer.model.Developer;
-import com.example.cheng.cmoretvplayer.model.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,18 +29,16 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
     YouTubePlayerView youTubeView;
     @Bind(R.id.youtube_view_title)
     TextView youtube_view_title;
-    ArrayList<ArrayList<YoutubeInfo>> youtubeList;
-    HashMap data;
+    ArrayList<YoutubeInfo> youtubeList;
     private YouTubePlayer player;
     private boolean fullScreen = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_youtube_player);
+        setContentView(R.layout.activity_youtube);
         ButterKnife.bind(this);
-        youtubeList = (ArrayList<ArrayList<YoutubeInfo>>) getIntent().getSerializableExtra("list");
-        data = (HashMap) getIntent().getSerializableExtra("data");
+        youtubeList = (ArrayList<YoutubeInfo>) getIntent().getSerializableExtra("data");
         youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youTubeView.initialize(Developer.Key, this);
 
@@ -52,8 +48,8 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
         if (!wasRestored) {
             player = youTubePlayer;
-            youtube_view_title.setText(data.get("title").toString());
-            youTubePlayer.loadVideo(data.get("videoId").toString());
+            youtube_view_title.setText(youtubeList.get(0).getVideoTitle());
+            youTubePlayer.loadVideo(youtubeList.get(0).getVideoUrl());
             youTubePlayer.setOnFullscreenListener(FullScreenListener);
         }
     }

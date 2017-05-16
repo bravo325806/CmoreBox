@@ -1,9 +1,9 @@
 package com.example.cheng.cmoretvplayer.view;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.cheng.cmoretvplayer.R;
 import com.example.cheng.cmoretvplayer.model.CmoreAPI;
+import com.example.cheng.cmoretvplayer.view.activity.MenuActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,11 +39,28 @@ public class MainActivity extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInAccount acct;
     private CmoreAPI cmoreAPI;
+    private SharedPreferences sharedReader;
+    private SharedPreferences.Editor shareEditor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        sharedReader=getSharedPreferences("CmoreBox",0);
+        shareEditor=sharedReader.edit();
+        if(sharedReader.getInt("login",0)==1){
+            Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+            intent.putExtra("email",sharedReader.getString("email",""));
+            intent.putExtra("disPlayName", sharedReader.getString("disPlayName",""));
+            intent.putExtra("id",sharedReader.getString("id",""));
+            startActivityForResult(intent, YOUTUBEINTENT);
+        }else{
+            init();
+        }
+
+    }
+    private void init(){
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -64,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             //已有權限，可進行檔案存取
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
+
         }
     }
 
@@ -97,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("google status code", statusCode + "");
             cmoreAPI.getGoogleRegister(acct.getDisplayName(), acct.getEmail());
             cmoreAPI.setOnGoogleRegisterFinish(onGoogleRegisterFinish);
-
+        }
+        if(requestCode==YOUTUBEINTENT){
+            finish();
         }
     }
     CmoreAPI.OnGoogleRegisterFinish onGoogleRegisterFinish=new CmoreAPI.OnGoogleRegisterFinish() {
@@ -123,7 +144,11 @@ public class MainActivity extends AppCompatActivity {
 
             if (jsonObject.getString("result").equals("0")) {
                 if (acct != null) {
-                    Intent intent = new Intent(MainActivity.this, YoutubeActivity.class);
+                    shareEditor.putInt("login",1).commit();
+                    shareEditor.putString("email",acct.getEmail()).commit();
+                    shareEditor.putString("disPlayName",acct.getDisplayName()).commit();
+                    shareEditor.putString("id",jsonObject.getString("id")).commit();
+                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra("email", acct.getEmail());
                     intent.putExtra("disPlayName", acct.getDisplayName());
                     intent.putExtra("id",jsonObject.getString("id"));

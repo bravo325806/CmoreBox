@@ -1,4 +1,4 @@
-package com.example.cheng.cmoretvplayer.view;
+package com.example.cheng.cmoretvplayer.view.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,20 +13,18 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.cheng.cmoretvplayer.R;
+import com.example.cheng.cmoretvplayer.model.asynctask.YoutubePlaylistAsync;
 import com.example.cheng.cmoretvplayer.model.CmoreAPI;
-import com.example.cheng.cmoretvplayer.model.YoutubeAsync;
-import com.example.cheng.cmoretvplayer.model.YoutubeInfo;
-import com.example.cheng.cmoretvplayer.model.YoutubeVideoAsync;
-import com.example.cheng.cmoretvplayer.model.adapter.YoutubeDrawerAdapter;
-import com.example.cheng.cmoretvplayer.model.adapter.YoutubeInnerListAdapter;
-import com.example.cheng.cmoretvplayer.model.adapter.YoutubeOuterListAdapter;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.model.sqlite.YoutubeSQLite;
+import com.example.cheng.cmoretvplayer.view.adapter.MenuDrawerAdapter;
+import com.example.cheng.cmoretvplayer.view.adapter.MenuInnerListAdapter;
+import com.example.cheng.cmoretvplayer.view.adapter.MenuOuterListAdapter;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.oauth2.Oauth2Scopes;
 
@@ -35,13 +33,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.fabric.sdk.android.Fabric;
 
-public class YoutubeActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity {
     @Bind(R.id.youtube_outer_list)
     RecyclerView youtubeOuterList;
     @Bind(R.id.youtube_drawer_list)
@@ -50,13 +46,13 @@ public class YoutubeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     @Bind(R.id.activity_outer_main)
     RelativeLayout mainLayout;
-    private YoutubeOuterListAdapter youtubeOuterListAdapter;
-    private YoutubeDrawerAdapter youtubeDrawerAdapter;
+    private MenuOuterListAdapter youtubeOuterListAdapter;
+    private MenuDrawerAdapter menuDrawerAdapter;
     public static final int RESULTCALLBACK = 666;
     private String email, disPlayName, id;
     private GoogleAccountCredential credential;
     private Handler handler = new Handler();
-
+    private YoutubeSQLite youtubeSQLite;
     private Toast toast;
     private int position = 0;
     private CmoreAPI cmoreAPI;
@@ -64,21 +60,27 @@ public class YoutubeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activtiy_youtube_list);
+        setContentView(R.layout.activtiy_menu);
 //        Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
         email = getIntent().getStringExtra("email");
         disPlayName = getIntent().getStringExtra("disPlayName");
         id = getIntent().getStringExtra("id");
-        cmoreAPI = new CmoreAPI(YoutubeActivity.this);
+        cmoreAPI = new CmoreAPI(MenuActivity.this);
         init();
 //        logUser();
     }
 
     private void init() {
-        youtubeList = new ArrayList<>();
+
         setRecycleView();
-        setAPI();
+        setSQLite();
+        if(youtubeList==null){
+            youtubeList=new ArrayList<>();
+            setAPI();
+        }else{
+            setAdapter(youtubeList);
+        }
         setDrawerLayout();
     }
 
@@ -98,7 +100,10 @@ public class YoutubeActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         youtubeDrawerList.setLayoutManager(linearLayoutManager2);
     }
-
+    private void setSQLite(){
+        youtubeSQLite=new YoutubeSQLite(this,id);
+        youtubeList=youtubeSQLite.getDataBase();
+    }
     private void setAPI() {
 
         cmoreAPI.getBagInfo(id);
@@ -120,35 +125,37 @@ public class YoutubeActivity extends AppCompatActivity {
     }
     private void setCredential() {
         credential = GoogleAccountCredential.usingOAuth2(
-                YoutubeActivity.this,
+                MenuActivity.this,
                 Oauth2Scopes.all()
         );
         credential.setSelectedAccountName(email);
 
-        YoutubeVideoAsync youtubeVideoAsync = new YoutubeVideoAsync(YoutubeActivity.this, credential,youtubeList);
-        youtubeVideoAsync.execute();
+        YoutubePlaylistAsync youtubePlaylistAsync=new YoutubePlaylistAsync(MenuActivity.this,credential,youtubeList);
+        youtubePlaylistAsync.execute();
+//        YoutubeVideoAsync youtubeVideoAsync = new YoutubeVideoAsync(YoutubeActivity.this, credential,youtubeList);
+//        youtubeVideoAsync.execute();
     }
 
     public void setAdapter(ArrayList<ArrayList<YoutubeInfo>> arrayList) {
         if (youtubeOuterList.getAdapter() == null) {
-            youtubeOuterListAdapter = new YoutubeOuterListAdapter(arrayList);
+            youtubeOuterListAdapter = new MenuOuterListAdapter(arrayList);
             youtubeOuterList.setAdapter(youtubeOuterListAdapter);
         } else {
             youtubeOuterListAdapter.setArrayList(arrayList);
             youtubeOuterListAdapter.notifyDataSetChanged();
         }
         if (youtubeDrawerList.getAdapter() == null) {
-            youtubeDrawerAdapter = new YoutubeDrawerAdapter(arrayList);
-            youtubeDrawerList.setAdapter(youtubeDrawerAdapter);
-            youtubeDrawerAdapter.setItemClick(drawerItemClick);
+            menuDrawerAdapter = new MenuDrawerAdapter(arrayList);
+            youtubeDrawerList.setAdapter(menuDrawerAdapter);
+            menuDrawerAdapter.setItemClick(drawerItemClick);
         } else {
-            youtubeDrawerAdapter.setArrayList(arrayList);
-            youtubeDrawerAdapter.notifyDataSetChanged();
+            menuDrawerAdapter.setArrayList(arrayList);
+            menuDrawerAdapter.notifyDataSetChanged();
         }
         handler.post(runnable);
 
     }
-    YoutubeDrawerAdapter.OnItemClick drawerItemClick = new YoutubeDrawerAdapter.OnItemClick() {
+    MenuDrawerAdapter.OnItemClick drawerItemClick = new MenuDrawerAdapter.OnItemClick() {
         @Override
         public void ItemOnClick() {
 
@@ -165,11 +172,11 @@ public class YoutubeActivity extends AppCompatActivity {
         }
     };
 
-    YoutubeInnerListAdapter.OnItemClick innerItemClick = new YoutubeInnerListAdapter.OnItemClick() {
+    MenuInnerListAdapter.OnItemClick innerItemClick = new MenuInnerListAdapter.OnItemClick() {
         @Override
-        public void ItemOnClick(View view, HashMap data) {
-            Intent intent = new Intent(YoutubeActivity.this, YoutubePlayerActivity.class);
-            intent.putExtra("data", data);
+        public void ItemOnClick(View view, ArrayList data) {
+            Intent intent = new Intent(MenuActivity.this, YoutubePlayerActivity.class);
+            intent.putExtra("data",data);
             startActivity(intent);
 
         }
@@ -223,7 +230,6 @@ public class YoutubeActivity extends AppCompatActivity {
                     JSONArray layer2 = layer1.getJSONArray("layer1_value");
 
                     for (int j = 0; j < layer2.length(); j++) {
-                        int count=0;
                         JSONObject jsonObject2 = layer2.getJSONObject(j);
                         JSONArray urlArray = jsonObject2.getJSONArray("layer2_value");
                         ArrayList arrayList=new ArrayList<YoutubeInfo>();
@@ -239,12 +245,7 @@ public class YoutubeActivity extends AppCompatActivity {
 
                             arrayList.add(youtubeInfo);
 
-                            count++;
-                            if(count>26){
-                                youtubeList.add(arrayList);
-                                arrayList=new ArrayList<YoutubeInfo>();
-                                count=0;
-                            }
+
                         }
                         youtubeList.add(arrayList);
                     }
@@ -259,11 +260,18 @@ public class YoutubeActivity extends AppCompatActivity {
     private void showToast(String str) {
         if (toast == null) {
             //如果還沒有用過makeText方法，才使用
-            toast = android.widget.Toast.makeText(YoutubeActivity.this, str, Toast.LENGTH_SHORT);
+            toast = android.widget.Toast.makeText(MenuActivity.this, str, Toast.LENGTH_SHORT);
         } else {
             toast.setText(str);
             toast.setDuration(Toast.LENGTH_SHORT);
         }
         toast.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        youtubeSQLite.delDb();
+        youtubeSQLite.addDb(youtubeList);
     }
 }

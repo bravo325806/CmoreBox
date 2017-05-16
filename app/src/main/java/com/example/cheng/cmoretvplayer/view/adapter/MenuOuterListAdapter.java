@@ -1,4 +1,4 @@
-package com.example.cheng.cmoretvplayer.model.adapter;
+package com.example.cheng.cmoretvplayer.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,52 +8,55 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.cheng.cmoretvplayer.R;
-import com.example.cheng.cmoretvplayer.model.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by cheng on 2017/3/16.
  */
 
-public class YoutubeOuterListAdapter extends RecyclerView.Adapter<YoutubeOuterListAdapter.ViewHolder> {
+public class MenuOuterListAdapter extends RecyclerView.Adapter<MenuOuterListAdapter.ViewHolder> {
     private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
     private HashMap<Integer,RecyclerView> innerRecylerView;
-    private YoutubeInnerListAdapter youtubeInnerListAdapter;
-    public YoutubeOuterListAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
+    private MenuInnerListAdapter youtubeInnerListAdapter;
+    public MenuOuterListAdapter(ArrayList<ArrayList<YoutubeInfo>> youtubeList) {
         this.youtubeList = youtubeList;
         innerRecylerView=new HashMap<>();
     }
 
     @Override
-    public YoutubeOuterListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MenuOuterListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contactView = inflater.inflate(R.layout.item_youtube_outer_list, parent, false);
+        View contactView = inflater.inflate(R.layout.item_menu_outer_list, parent, false);
         // Return a new holder instance
-        YoutubeOuterListAdapter.ViewHolder viewHolder = new YoutubeOuterListAdapter.ViewHolder(contactView);
+        MenuOuterListAdapter.ViewHolder viewHolder = new MenuOuterListAdapter.ViewHolder(contactView);
 
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final YoutubeOuterListAdapter.ViewHolder holder, final int position) {
-        if(youtubeList.get(position).size()>9){
-            StaggeredGridLayoutManager linearManager = new StaggeredGridLayoutManager(9, StaggeredGridLayoutManager.VERTICAL);
+    public void onBindViewHolder(final MenuOuterListAdapter.ViewHolder holder, final int position) {
+        if(youtubeList.size()>10){
+            StaggeredGridLayoutManager linearManager = new StaggeredGridLayoutManager(10, StaggeredGridLayoutManager.VERTICAL);
             holder.youtubeInnerRecyclerView.setLayoutManager(linearManager);
         }else{
-            StaggeredGridLayoutManager linearManager = new StaggeredGridLayoutManager(youtubeList.get(position).size(), StaggeredGridLayoutManager.VERTICAL);
+            StaggeredGridLayoutManager linearManager = new StaggeredGridLayoutManager(youtubeList.size(), StaggeredGridLayoutManager.VERTICAL);
             holder.youtubeInnerRecyclerView.setLayoutManager(linearManager);
         }
-        youtubeInnerListAdapter = new YoutubeInnerListAdapter(youtubeList.get(position));
+        youtubeInnerListAdapter = new MenuInnerListAdapter(youtubeList);
         holder.youtubeInnerRecyclerView.setAdapter(youtubeInnerListAdapter);
         innerRecylerView.put(position,holder.youtubeInnerRecyclerView);
     }
     @Override
     public int getItemCount() {
-    return youtubeList.size();
+        if(youtubeList.size()>0){
+            return (youtubeList.size()/30)+1;
+        }else {
+            return 0;
+        }
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
@@ -76,7 +79,7 @@ public class YoutubeOuterListAdapter extends RecyclerView.Adapter<YoutubeOuterLi
     public void setArrayList(ArrayList arrayList) {
         youtubeList = arrayList;
     }
-    public YoutubeInnerListAdapter getYoutubeInner(){
+    public MenuInnerListAdapter getYoutubeInner(){
         return youtubeInnerListAdapter;
     }
 }
