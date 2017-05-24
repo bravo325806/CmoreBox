@@ -202,7 +202,7 @@ public class MenuActivity extends AppCompatActivity {
                 View v2 = youtubeOuterList.getFocusedChild();
                 position = youtubeOuterList.getChildAdapterPosition(v2);
             }
-            showToast(position + "");
+            //showToast(position + "");
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             View v = youtubeDrawerList.getFocusedChild();
             position = youtubeDrawerList.getChildAdapterPosition(v);
@@ -212,7 +212,7 @@ public class MenuActivity extends AppCompatActivity {
                 View v2 = youtubeOuterList.getFocusedChild();
                 position = youtubeOuterList.getChildAdapterPosition(v2);
             }
-            showToast(position + "");
+            //showToast(position + "");
         }
         return super.dispatchKeyEvent(event);
     }

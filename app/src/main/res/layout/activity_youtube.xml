@@ -10,9 +10,19 @@
         android:layout_height="50dp"
         android:textAppearance="@android:style/TextAppearance.Small"
         android:gravity="center" />
-    <com.google.android.youtube.player.YouTubePlayerView
-        android:id="@+id/youtube_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="match_parent">
+        <fragment
+            android:name="com.example.cheng.cmoretvplayer.view.fragment.YoutubeListFragment"
+            android:id="@+id/youtube_fragment_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></fragment>
+        <fragment
+            android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+            android:id="@+id/youtube_fragment_player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></fragment>
+    </FrameLayout>
+
 </LinearLayout>
