@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_inner_layout"
+    android:orientation="vertical"
+    android:layout_width="150dp"
+    android:layout_height="140dp"
+    android:background="@drawable/youtube_button"
+    android:focusable="true"
+    android:nextFocusLeft="@id/item_drawer_text">
+    <ImageView
+        android:id="@+id/item_inner_image"
+        android:layout_width="150dp"
+        android:layout_height="90dp"
+        />
+    <TextView
+        android:id="@+id/item_inner_text"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:maxLines="2"
+        android:layout_gravity="center_horizontal"
+        />
+</LinearLayout>

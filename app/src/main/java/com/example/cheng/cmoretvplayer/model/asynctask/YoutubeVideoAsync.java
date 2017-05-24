@@ -53,6 +53,7 @@ public class YoutubeVideoAsync extends AsyncTask {
                         youtubePlayList.get(i).get(j).setVideoThumbnails(video.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl());
                     }else{
                         youtubePlayList.get(i).remove(j);
+                        j--;
                     }
 
                 }
