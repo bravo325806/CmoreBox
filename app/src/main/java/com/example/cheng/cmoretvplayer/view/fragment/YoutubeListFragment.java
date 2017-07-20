@@ -45,13 +45,10 @@ public class YoutubeListFragment extends Fragment{
 
     private void init() {
         youtubeList=((YoutubePlayerActivity)getActivity()).getYoutubeList();
-        listFragmentOuterAdapter=new ListFragmentOuterAdapter(youtubeList);
+        listFragmentOuterAdapter=new ListFragmentOuterAdapter(youtubeList,((YoutubePlayerActivity)getActivity()).itemClick);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         youtubeOuterList.setLayoutManager(linearLayoutManager);
         youtubeOuterList.setAdapter(listFragmentOuterAdapter);
-    }
-    public ListFragmentOuterAdapter getListFragmentOuterAdapter(){
-        return listFragmentOuterAdapter;
     }
 }

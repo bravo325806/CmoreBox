@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.cheng.cmoretvplayer.R;
-import com.example.cheng.cmoretvplayer.model.asynctask.YoutubePlaylistAsync;
 import com.example.cheng.cmoretvplayer.model.CmoreAPI;
+import com.example.cheng.cmoretvplayer.model.asynctask.YoutubePlaylistAsync;
 import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
 import com.example.cheng.cmoretvplayer.model.sqlite.YoutubeSQLite;
 import com.example.cheng.cmoretvplayer.view.adapter.MenuDrawerAdapter;
@@ -57,6 +57,7 @@ public class MenuActivity extends AppCompatActivity {
     private int position = 0;
     private CmoreAPI cmoreAPI;
     private ArrayList<ArrayList<YoutubeInfo>> youtubeList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,10 +76,10 @@ public class MenuActivity extends AppCompatActivity {
 
         setRecycleView();
         setSQLite();
-        if(youtubeList==null){
-            youtubeList=new ArrayList<>();
+        if (youtubeList == null) {
+            youtubeList = new ArrayList<>();
             setAPI();
-        }else{
+        } else {
             setAdapter(youtubeList);
         }
         setDrawerLayout();
@@ -91,6 +92,7 @@ public class MenuActivity extends AppCompatActivity {
         Crashlytics.setUserEmail("user@fabric.io");
         Crashlytics.setUserName("Test User");
     }
+
     private void setRecycleView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -100,10 +102,12 @@ public class MenuActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         youtubeDrawerList.setLayoutManager(linearLayoutManager2);
     }
-    private void setSQLite(){
-        youtubeSQLite=new YoutubeSQLite(this,id);
-        youtubeList=youtubeSQLite.getDataBase();
+
+    private void setSQLite() {
+        youtubeSQLite = new YoutubeSQLite(this, id);
+        youtubeList = youtubeSQLite.getDataBase();
     }
+
     private void setAPI() {
 
         cmoreAPI.getBagInfo(id);
@@ -123,6 +127,7 @@ public class MenuActivity extends AppCompatActivity {
         drawerLayout.setScrimColor(Color.TRANSPARENT);
         drawerLayout.openDrawer(Gravity.LEFT);
     }
+
     private void setCredential() {
         credential = GoogleAccountCredential.usingOAuth2(
                 MenuActivity.this,
@@ -130,7 +135,7 @@ public class MenuActivity extends AppCompatActivity {
         );
         credential.setSelectedAccountName(email);
 
-        YoutubePlaylistAsync youtubePlaylistAsync=new YoutubePlaylistAsync(MenuActivity.this,credential,youtubeList);
+        YoutubePlaylistAsync youtubePlaylistAsync = new YoutubePlaylistAsync(MenuActivity.this, credential, youtubeList);
         youtubePlaylistAsync.execute();
 //        YoutubeVideoAsync youtubeVideoAsync = new YoutubeVideoAsync(YoutubeActivity.this, credential,youtubeList);
 //        youtubeVideoAsync.execute();
@@ -155,6 +160,7 @@ public class MenuActivity extends AppCompatActivity {
         handler.post(runnable);
 
     }
+
     MenuDrawerAdapter.OnItemClick drawerItemClick = new MenuDrawerAdapter.OnItemClick() {
         @Override
         public void ItemOnClick() {
@@ -176,7 +182,7 @@ public class MenuActivity extends AppCompatActivity {
         @Override
         public void ItemOnClick(View view, ArrayList data) {
             Intent intent = new Intent(MenuActivity.this, YoutubePlayerActivity.class);
-            intent.putExtra("data",data);
+            intent.putExtra("data", data);
             startActivity(intent);
 
         }
@@ -198,7 +204,7 @@ public class MenuActivity extends AppCompatActivity {
             position = youtubeDrawerList.getChildAdapterPosition(v);
             if (position >= 0) {
                 youtubeOuterList.smoothScrollToPosition(position);
-            }else{
+            } else {
                 View v2 = youtubeOuterList.getFocusedChild();
                 position = youtubeOuterList.getChildAdapterPosition(v2);
             }
@@ -208,7 +214,7 @@ public class MenuActivity extends AppCompatActivity {
             position = youtubeDrawerList.getChildAdapterPosition(v);
             if (position >= 0) {
                 youtubeOuterList.smoothScrollToPosition(position);
-            }else {
+            } else {
                 View v2 = youtubeOuterList.getFocusedChild();
                 position = youtubeOuterList.getChildAdapterPosition(v2);
             }
@@ -216,6 +222,7 @@ public class MenuActivity extends AppCompatActivity {
         }
         return super.dispatchKeyEvent(event);
     }
+
     CmoreAPI.OnBagInfoFinish onBagDownLoadFinish = new CmoreAPI.OnBagInfoFinish() {
         @Override
         public void onFinish(String response) throws JSONException {
@@ -232,22 +239,24 @@ public class MenuActivity extends AppCompatActivity {
                     for (int j = 0; j < layer2.length(); j++) {
                         JSONObject jsonObject2 = layer2.getJSONObject(j);
                         JSONArray urlArray = jsonObject2.getJSONArray("layer2_value");
-                        ArrayList arrayList=new ArrayList<YoutubeInfo>();
-                        for (int k = 0; k < urlArray.length(); k++) {
+                        ArrayList arrayList = new ArrayList<YoutubeInfo>();
+                        if (!urlArray.toString().equals("[]")) {
+                            for (int k = 0; k < urlArray.length(); k++) {
 
-                            String url[]=urlArray.getJSONObject(k).get("url").toString().split("v=");
-                            YoutubeInfo youtubeInfo=new YoutubeInfo();
-                            youtubeInfo.setT2id(jsonObject2.get("layer2_id").toString());
-                            youtubeInfo.setT2name(jsonObject2.get("layer2_name").toString());
-                            youtubeInfo.setVideoId(urlArray.getJSONObject(k).get("id").toString());
-                            youtubeInfo.setVideoTitle(urlArray.getJSONObject(k).get("name").toString());
-                            youtubeInfo.setVideoUrl(url[1]);
+                                String url[] = urlArray.getJSONObject(k).get("url").toString().split("v=");
+                                YoutubeInfo youtubeInfo = new YoutubeInfo();
+                                youtubeInfo.setT2id(jsonObject2.get("layer2_id").toString());
+                                youtubeInfo.setT2name(jsonObject2.get("layer2_name").toString());
+                                youtubeInfo.setVideoId(urlArray.getJSONObject(k).get("id").toString());
+                                youtubeInfo.setVideoTitle(urlArray.getJSONObject(k).get("name").toString());
+                                youtubeInfo.setVideoUrl(url[1]);
 
-                            arrayList.add(youtubeInfo);
+                                arrayList.add(youtubeInfo);
 
 
+                            }
+                            youtubeList.add(arrayList);
                         }
-                        youtubeList.add(arrayList);
                     }
                 } catch (Exception ex) {
                     Log.e("jsonparse error", ex.toString());

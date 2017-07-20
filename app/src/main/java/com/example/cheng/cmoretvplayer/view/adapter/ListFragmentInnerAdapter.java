@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.cheng.cmoretvplayer.R;
 import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.view.activity.YoutubePlayerActivity;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
@@ -22,14 +23,12 @@ import java.util.List;
 
 public class ListFragmentInnerAdapter extends RecyclerView.Adapter<ListFragmentInnerAdapter.ViewHolder> {
     private ArrayList<YoutubeInfo> youtubeList;
-    private ListFragmentInnerAdapter.OnItemClick itemOnClick;
     private Context context;
-    public interface OnItemClick {
-        void ItemOnClick(View view);
-    }
+    private YoutubePlayerActivity.ItemClick itemClick;
 
-    public ListFragmentInnerAdapter(List youtubeList) {
+    public ListFragmentInnerAdapter(List youtubeList,YoutubePlayerActivity.ItemClick itemClick) {
         this.youtubeList = new ArrayList<>(youtubeList);
+        this.itemClick=itemClick;
     }
 
     @Override
@@ -60,13 +59,10 @@ public class ListFragmentInnerAdapter extends RecyclerView.Adapter<ListFragmentI
     View.OnClickListener imageClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            itemOnClick.ItemOnClick(v);
+            itemClick.itemClicK(v);
         }
     };
 
-    public void setItemClick(ListFragmentInnerAdapter.OnItemClick itemOnClick) {
-        this.itemOnClick = itemOnClick;
-    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
