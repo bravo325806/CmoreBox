@@ -42,7 +42,10 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
     private boolean fullScreen = false;
     private YouTubePlayerFragment youTubePlayerFragment;
     private YoutubeListFragment youtubeListFragment;
-    private Handler handler;
+    private int count;
+    public interface ItemClick{
+        void itemClicK(View view);
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +58,6 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
         youtubeListFragment=(YoutubeListFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment_list);
         youTubePlayerFragment = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment_player);
         youTubePlayerFragment.initialize(Developer.Key, this);
-        handler=new Handler();
-        handler.post(runnable);
     }
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
@@ -91,25 +92,30 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
-        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (!fullScreen) {
-                player.setFullscreen(true);
-            }
-        }else if(keyCode==KeyEvent.KEYCODE_DPAD_DOWN){
-            if (youTubePlayerFragment.getView().getVisibility()==View.GONE){
-                youTubePlayerFragment.getView().setVisibility(View.VISIBLE);
-            }else {
+        if (youTubePlayerFragment.getView().getVisibility() == View.VISIBLE) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (!fullScreen) {
+                    player.setFullscreen(true);
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 youTubePlayerFragment.getView().setVisibility(View.GONE);
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                count++;
+                if(count==2){
+                    if (player.isPlaying()) {
+                        player.pause();
+                    } else {
+                        player.play();
+                    }
+                    count=0;
+                }
+
+            }else if(keyCode==KeyEvent.KEYCODE_BACK){
+                return super.dispatchKeyEvent(event);
             }
-        }else if(keyCode==KeyEvent.KEYCODE_ENTER){
-            if(player.isPlaying()){
-                player.pause();
-            }else{
-                player.play();
-            }
+            return false;
         }
         return super.dispatchKeyEvent(event);
-
     }
 
     YouTubePlayer.OnFullscreenListener FullScreenListener = new YouTubePlayer.OnFullscreenListener() {
@@ -118,25 +124,17 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements YouTub
             fullScreen = b;
         }
     };
-    private Runnable runnable=new Runnable() {
-        @Override
-        public void run() {
-            if (youtubeListFragment.getListFragmentOuterAdapter().getYoutubeInner() != null) {
-                youtubeListFragment.getListFragmentOuterAdapter().getYoutubeInner().setItemClick(innerItemClick);
-            }
-            handler.postDelayed(runnable, 20);
-        }
-    };
-    ListFragmentInnerAdapter.OnItemClick innerItemClick=new ListFragmentInnerAdapter.OnItemClick() {
-        @Override
-        public void ItemOnClick(View view) {
-            youTubePlayerFragment.getView().setVisibility(View.VISIBLE);
-            youtube_view_title.setText(youtubeList.get(0).getVideoTitle());
-            player.loadVideo(((YoutubeInfo)view.getTag()).getVideoUrl());
-            player.setOnFullscreenListener(FullScreenListener);
-        }
-    };
     public ArrayList<YoutubeInfo> getYoutubeList(){
         return youtubeList;
     }
+    public ItemClick itemClick=new ItemClick() {
+        @Override
+        public void itemClicK(View view) {
+            youTubePlayerFragment.getView().setVisibility(View.VISIBLE);
+            youtube_view_title.setText(youtubeList.get(0).getVideoTitle());
+            player.loadVideo(((YoutubeInfo) view.getTag()).getVideoUrl());
+            player.setOnFullscreenListener(FullScreenListener);
+            youtube_view_title.setText(((YoutubeInfo) view.getTag()).getVideoTitle());
+        }
+    };
 }

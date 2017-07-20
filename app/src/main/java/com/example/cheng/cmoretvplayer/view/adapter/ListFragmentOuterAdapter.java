@@ -4,11 +4,13 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.cheng.cmoretvplayer.R;
 import com.example.cheng.cmoretvplayer.model.datastructure.YoutubeInfo;
+import com.example.cheng.cmoretvplayer.view.activity.YoutubePlayerActivity;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -21,9 +23,10 @@ import java.util.HashMap;
 public class ListFragmentOuterAdapter extends RecyclerView.Adapter<ListFragmentOuterAdapter.ViewHolder> {
     private ArrayList<YoutubeInfo> youtubeList;
     private ListFragmentInnerAdapter listFragmentInnerAdapter;
-
-    public ListFragmentOuterAdapter(ArrayList<YoutubeInfo> youtubeList) {
+    private YoutubePlayerActivity.ItemClick itemClick;
+    public ListFragmentOuterAdapter(ArrayList<YoutubeInfo> youtubeList,YoutubePlayerActivity.ItemClick itemClick) {
         this.youtubeList = youtubeList;
+        this.itemClick=itemClick;
     }
 
     @Override
@@ -47,9 +50,9 @@ public class ListFragmentOuterAdapter extends RecyclerView.Adapter<ListFragmentO
             holder.youtubeInnerRecyclerView.setLayoutManager(linearManager);
         }
         if((position*30)+30>youtubeList.size()){
-            listFragmentInnerAdapter = new ListFragmentInnerAdapter(youtubeList.subList(position*30,youtubeList.size()));
+            listFragmentInnerAdapter = new ListFragmentInnerAdapter(youtubeList.subList(position*30,youtubeList.size()),itemClick);
         }else{
-            listFragmentInnerAdapter = new ListFragmentInnerAdapter(youtubeList.subList(position*30,(position*30)+30));
+            listFragmentInnerAdapter = new ListFragmentInnerAdapter(youtubeList.subList(position*30,(position*30)+30),itemClick);
         }
 
         holder.youtubeInnerRecyclerView.setAdapter(listFragmentInnerAdapter);
@@ -79,8 +82,5 @@ public class ListFragmentOuterAdapter extends RecyclerView.Adapter<ListFragmentO
             youtubeInnerRecyclerView = (RecyclerView) itemView.findViewById(R.id.item_list_fragment_inner_list);
 
         }
-    }
-    public ListFragmentInnerAdapter getYoutubeInner(){
-        return listFragmentInnerAdapter;
     }
 }
